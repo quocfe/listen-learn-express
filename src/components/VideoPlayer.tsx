@@ -52,7 +52,7 @@ export const VideoPlayer = ({ videoUrl, onTimeUpdate }: VideoPlayerProps) => {
   const restart = () => {
     const video = videoRef.current;
     if (!video) return;
-    
+
     video.currentTime = 0;
     setCurrentTime(0);
   };
@@ -73,12 +73,12 @@ export const VideoPlayer = ({ videoUrl, onTimeUpdate }: VideoPlayerProps) => {
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
         />
-        
+
         <div className="space-y-3">
           {/* Progress Bar */}
           <div className="relative">
             <div className="w-full bg-muted rounded-full h-2">
-              <div 
+              <div
                 className="bg-gradient-primary h-2 rounded-full transition-all duration-300"
                 style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
               />
@@ -98,10 +98,9 @@ export const VideoPlayer = ({ videoUrl, onTimeUpdate }: VideoPlayerProps) => {
             >
               <RotateCcw className="w-4 h-4" />
             </Button>
-            
+
             <Button
               onClick={togglePlay}
-              variant="hero"
               size="lg"
               className="px-8"
             >

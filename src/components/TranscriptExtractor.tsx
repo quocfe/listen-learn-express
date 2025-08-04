@@ -22,7 +22,7 @@ export const TranscriptExtractor = ({ videoFile, onTranscriptExtracted }: Transc
       const video = document.createElement('video');
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      
+
       video.src = URL.createObjectURL(videoFile);
       video.addEventListener('loadedmetadata', async () => {
         try {
@@ -30,29 +30,29 @@ export const TranscriptExtractor = ({ videoFile, onTranscriptExtracted }: Transc
           const source = audioContext.createMediaElementSource(video);
           const destination = audioContext.createMediaStreamDestination();
           source.connect(destination);
-          
+
           const mediaRecorder = new MediaRecorder(destination.stream);
           const chunks: Blob[] = [];
-          
+
           mediaRecorder.ondataavailable = (event) => {
             chunks.push(event.data);
           };
-          
+
           mediaRecorder.onstop = async () => {
             const audioBlob = new Blob(chunks, { type: 'audio/wav' });
             const arrayBuffer = await audioBlob.arrayBuffer();
             const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
             resolve(audioBuffer);
           };
-          
+
           video.play();
           mediaRecorder.start();
-          
+
           setTimeout(() => {
             mediaRecorder.stop();
             video.pause();
           }, video.duration * 1000);
-          
+
         } catch (error) {
           reject(error);
         }
@@ -92,7 +92,7 @@ export const TranscriptExtractor = ({ videoFile, onTranscriptExtracted }: Transc
 
       // Trích xuất audio từ video
       const videoUrl = URL.createObjectURL(videoFile);
-      
+
       setProgress(80);
 
       // Thực hiện transcript
@@ -156,7 +156,7 @@ export const TranscriptExtractor = ({ videoFile, onTranscriptExtracted }: Transc
             <p className="text-sm text-muted-foreground">
               Video: {videoFile.name}
             </p>
-            
+
             {isExtracting && (
               <div className="space-y-2">
                 <Progress value={progress} className="h-2" />
@@ -166,11 +166,10 @@ export const TranscriptExtractor = ({ videoFile, onTranscriptExtracted }: Transc
               </div>
             )}
 
-            <Button 
+            <Button
               onClick={extractTranscript}
               disabled={isExtracting}
               className="w-full"
-              variant="hero"
             >
               {isExtracting ? (
                 <>
@@ -202,7 +201,7 @@ export const TranscriptExtractor = ({ videoFile, onTranscriptExtracted }: Transc
                 Tải xuống
               </Button>
             </div>
-            
+
             <div className="p-4 bg-muted/50 rounded-lg border max-h-64 overflow-y-auto">
               <p className="text-sm text-foreground whitespace-pre-wrap">
                 {transcript}

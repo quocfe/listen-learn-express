@@ -52,7 +52,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-hero">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-8">
         {/* Progress Indicator */}
         <div className="mb-8">
@@ -84,7 +84,7 @@ const Index = () => {
                 </div>
               </div>
             </Card>
-            
+
             <Card className="p-4 bg-gradient-card border-border/50 shadow-elegant">
               <div className="flex items-center gap-3">
                 <TrendingUp className="w-8 h-8 text-success" />
@@ -94,7 +94,7 @@ const Index = () => {
                 </div>
               </div>
             </Card>
-            
+
             <Card className="p-4 bg-gradient-card border-border/50 shadow-elegant">
               <div className="flex items-center gap-3">
                 <Clock className="w-8 h-8 text-accent" />
@@ -130,13 +130,13 @@ const Index = () => {
                   </h2>
                   <VideoPlayer videoUrl={videoUrl} />
                 </div>
-                
+
                 <div>
                   <h2 className="text-2xl font-bold mb-4 text-foreground">
                     3. Trích xuất Transcript
                   </h2>
-                  <TranscriptExtractor 
-                    videoFile={videoFile} 
+                  <TranscriptExtractor
+                    videoFile={videoFile}
                     onTranscriptExtracted={handleTranscriptExtracted}
                   />
                 </div>
@@ -151,9 +151,9 @@ const Index = () => {
                 <h2 className="text-2xl font-bold mb-4 text-foreground">
                   4. Luyện tập chính tả
                 </h2>
-                <DictationArea 
-                  targetText={extractedTranscript} 
-                  onComplete={handleDictationComplete} 
+                <DictationArea
+                  targetText={extractedTranscript}
+                  onComplete={handleDictationComplete}
                 />
               </div>
             )}

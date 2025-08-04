@@ -27,7 +27,7 @@ export const VideoUpload = ({ onVideoSelect, currentVideo, onRemoveVideo }: Vide
 
     const url = URL.createObjectURL(file);
     onVideoSelect(file, url);
-    
+
     toast({
       title: "Thành công",
       description: "Video đã được tải lên thành công!",
@@ -38,7 +38,7 @@ export const VideoUpload = ({ onVideoSelect, currentVideo, onRemoveVideo }: Vide
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
       handleFileSelect(files[0]);
@@ -75,10 +75,8 @@ export const VideoUpload = ({ onVideoSelect, currentVideo, onRemoveVideo }: Vide
           <p className="text-muted-foreground mb-4">
             Kéo thả video vào đây hoặc click để chọn file
           </p>
-          <Button 
+          <Button
             onClick={() => fileInputRef.current?.click()}
-            variant="hero"
-            className="animate-fade-in"
           >
             <Upload className="w-4 h-4 mr-2" />
             Chọn Video

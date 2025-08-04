@@ -22,10 +22,10 @@ export const DictationArea = ({ targetText, onComplete }: DictationAreaProps) =>
   const calculateScore = (original: string, userInput: string) => {
     const originalWords = original.toLowerCase().split(/\s+/);
     const userWords = userInput.toLowerCase().split(/\s+/);
-    
+
     let correctWords = 0;
     const newMistakes: Array<{word: string, suggestion: string}> = [];
-    
+
     for (let i = 0; i < Math.max(originalWords.length, userWords.length); i++) {
       if (originalWords[i] === userWords[i]) {
         correctWords++;
@@ -36,7 +36,7 @@ export const DictationArea = ({ targetText, onComplete }: DictationAreaProps) =>
         });
       }
     }
-    
+
     const accuracy = (correctWords / originalWords.length) * 100;
     setMistakes(newMistakes);
     return Math.round(accuracy);
@@ -101,7 +101,7 @@ export const DictationArea = ({ targetText, onComplete }: DictationAreaProps) =>
         <h3 className="text-lg font-semibold mb-4 text-foreground">
           Nhập văn bản bạn nghe được:
         </h3>
-        
+
         <Textarea
           placeholder="Nhập văn bản bạn nghe được từ video..."
           value={userText}
@@ -113,14 +113,13 @@ export const DictationArea = ({ targetText, onComplete }: DictationAreaProps) =>
         <div className="flex gap-3">
           <Button
             onClick={checkDictation}
-            variant="hero"
             disabled={isChecked}
             className="flex-1"
           >
             <CheckCircle className="w-4 h-4 mr-2" />
             Kiểm tra
           </Button>
-          
+
           <Button
             onClick={reset}
             variant="outline"
@@ -141,12 +140,12 @@ export const DictationArea = ({ targetText, onComplete }: DictationAreaProps) =>
                 Kết quả
               </h3>
             </div>
-            
+
             <div className={`text-4xl font-bold ${getScoreColor(score)}`}>
               {score}/100
             </div>
-            
-            <Button 
+
+            <Button
               variant={getScoreVariant(score)}
               className="px-8"
             >
