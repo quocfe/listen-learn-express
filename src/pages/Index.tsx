@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { VideoUpload } from "@/components/VideoUpload";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { DictationArea } from "@/components/DictationArea";
+import { TranscriptExtractor } from "@/components/TranscriptExtractor";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -12,6 +13,7 @@ const Index = () => {
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
+  const [extractedTranscript, setExtractedTranscript] = useState<string>("");
   const [sessionStats, setSessionStats] = useState({
     totalSessions: 0,
     averageScore: 0,
@@ -41,6 +43,10 @@ const Index = () => {
 
   const startNewSession = () => {
     setCurrentStep(2);
+  };
+
+  const handleTranscriptExtracted = (transcript: string) => {
+    setExtractedTranscript(transcript);
   };
 
   return (
@@ -117,11 +123,23 @@ const Index = () => {
             </div>
 
             {videoUrl && (
-              <div className="animate-fade-in">
-                <h2 className="text-2xl font-bold mb-4 text-foreground">
-                  2. Phát video
-                </h2>
-                <VideoPlayer videoUrl={videoUrl} />
+              <div className="animate-fade-in space-y-6">
+                <div>
+                  <h2 className="text-2xl font-bold mb-4 text-foreground">
+                    2. Phát video
+                  </h2>
+                  <VideoPlayer videoUrl={videoUrl} />
+                </div>
+                
+                <div>
+                  <h2 className="text-2xl font-bold mb-4 text-foreground">
+                    3. Trích xuất Transcript
+                  </h2>
+                  <TranscriptExtractor 
+                    videoFile={videoFile} 
+                    onTranscriptExtracted={handleTranscriptExtracted}
+                  />
+                </div>
               </div>
             )}
           </div>
@@ -131,9 +149,12 @@ const Index = () => {
             {videoUrl && (
               <div className="animate-fade-in">
                 <h2 className="text-2xl font-bold mb-4 text-foreground">
-                  3. Luyện tập chính tả
+                  4. Luyện tập chính tả
                 </h2>
-                <DictationArea onComplete={handleDictationComplete} />
+                <DictationArea 
+                  targetText={extractedTranscript} 
+                  onComplete={handleDictationComplete} 
+                />
               </div>
             )}
 
