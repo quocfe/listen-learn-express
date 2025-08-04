@@ -8,9 +8,16 @@ import { useToast } from "@/hooks/use-toast";
 interface DictationAreaProps {
   targetText?: string;
   onComplete?: (score: number, userText: string) => void;
+  segmentText?: string;
+  isSegmentMode?: boolean;
 }
 
-export const DictationArea = ({ targetText, onComplete }: DictationAreaProps) => {
+export const DictationArea = ({ 
+  targetText = "", 
+  onComplete, 
+  segmentText = "",
+  isSegmentMode = false 
+}: DictationAreaProps) => {
   const [userText, setUserText] = useState("");
   const [isChecked, setIsChecked] = useState(false);
   const [score, setScore] = useState<number | null>(null);
@@ -52,7 +59,8 @@ export const DictationArea = ({ targetText, onComplete }: DictationAreaProps) =>
       return;
     }
 
-    const calculatedScore = calculateScore(sampleText, userText);
+    const textToCheck = isSegmentMode ? segmentText : sampleText;
+    const calculatedScore = calculateScore(textToCheck, userText);
     setScore(calculatedScore);
     setIsChecked(true);
     onComplete?.(calculatedScore, userText);
@@ -89,10 +97,13 @@ export const DictationArea = ({ targetText, onComplete }: DictationAreaProps) =>
       <Card className="p-6 bg-muted/30 border-border/50">
         <h3 className="text-lg font-semibold mb-3 text-foreground flex items-center gap-2">
           <AlertCircle className="w-5 h-5 text-primary" />
-          Văn bản gốc (để tham khảo)
+          {isSegmentMode ? "Văn bản đoạn hiện tại:" : "Văn bản gốc (để tham khảo)"}
         </h3>
         <p className="text-muted-foreground leading-relaxed">
-          {sampleText}
+          {isSegmentMode 
+            ? (segmentText || "Chưa có văn bản cho đoạn này. Vui lòng trích xuất transcript trước.")
+            : sampleText
+          }
         </p>
       </Card>
 
