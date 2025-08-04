@@ -4,6 +4,7 @@ import { VideoUpload } from "@/components/VideoUpload";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { DictationArea } from "@/components/DictationArea";
 import { TranscriptExtractor } from "@/components/TranscriptExtractor";
+import { SegmentController } from "@/components/SegmentController";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -14,6 +15,11 @@ const Index = () => {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [extractedTranscript, setExtractedTranscript] = useState<string>("");
+  const [videoDuration, setVideoDuration] = useState(0);
+  const [currentVideoTime, setCurrentVideoTime] = useState(0);
+  const [currentSegment, setCurrentSegment] = useState<any>(null);
+  const [segmentDuration, setSegmentDuration] = useState(15);
+  const [isSegmentMode, setIsSegmentMode] = useState(false);
   const [sessionStats, setSessionStats] = useState({
     totalSessions: 0,
     averageScore: 0,
@@ -47,6 +53,40 @@ const Index = () => {
 
   const handleTranscriptExtracted = (transcript: string) => {
     setExtractedTranscript(transcript);
+    setIsSegmentMode(true); // Enable segment mode after transcript extraction
+  };
+
+  const handleVideoTimeUpdate = (currentTime: number, duration: number) => {
+    setCurrentVideoTime(currentTime);
+    setVideoDuration(duration);
+  };
+
+  const handleSegmentChange = (segment: any) => {
+    setCurrentSegment(segment);
+  };
+
+  const handlePlaySegment = (startTime: number, endTime: number) => {
+    // Use the global function exposed by VideoPlayer
+    if ((window as any).playVideoSegment) {
+      (window as any).playVideoSegment(startTime, endTime);
+    }
+  };
+
+  const handleSegmentDurationChange = (duration: number) => {
+    setSegmentDuration(duration);
+  };
+
+  // Get segment text from transcript
+  const getSegmentText = (segment: any) => {
+    if (!segment || !extractedTranscript) return "";
+
+    // This is a simplified version - in a real app, you'd need to sync transcript with timecodes
+    const wordsPerSecond = extractedTranscript.split(' ').length / videoDuration;
+    const startWordIndex = Math.floor(segment.startTime * wordsPerSecond);
+    const endWordIndex = Math.floor(segment.endTime * wordsPerSecond);
+
+    const words = extractedTranscript.split(' ');
+    return words.slice(startWordIndex, endWordIndex).join(' ');
   };
 
   return (
@@ -128,7 +168,11 @@ const Index = () => {
                   <h2 className="text-2xl font-bold mb-4 text-foreground">
                     2. Phát video
                   </h2>
-                  <VideoPlayer videoUrl={videoUrl} />
+                  <VideoPlayer
+                    videoUrl={videoUrl}
+                    onTimeUpdate={handleVideoTimeUpdate}
+                    onPlaySegment={handlePlaySegment}
+                  />
                 </div>
 
                 <div>
@@ -140,6 +184,21 @@ const Index = () => {
                     onTranscriptExtracted={handleTranscriptExtracted}
                   />
                 </div>
+
+                {isSegmentMode && videoDuration > 0 && (
+                  <div>
+                    <h2 className="text-2xl font-bold mb-4 text-foreground">
+                      4. Điều khiển đoạn
+                    </h2>
+                    <SegmentController
+                      videoDuration={videoDuration}
+                      currentTime={currentVideoTime}
+                      onSegmentChange={handleSegmentChange}
+                      onPlaySegment={handlePlaySegment}
+                      onSegmentDurationChange={handleSegmentDurationChange}
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -149,10 +208,12 @@ const Index = () => {
             {videoUrl && (
               <div className="animate-fade-in">
                 <h2 className="text-2xl font-bold mb-4 text-foreground">
-                  4. Luyện tập chính tả
+                  {isSegmentMode ? "5. Luyện tập chính tả theo đoạn" : "4. Luyện tập chính tả"}
                 </h2>
                 <DictationArea
                   targetText={extractedTranscript}
+                  segmentText={currentSegment ? getSegmentText(currentSegment) : ""}
+                  isSegmentMode={isSegmentMode}
                   onComplete={handleDictationComplete}
                 />
               </div>

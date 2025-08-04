@@ -6,14 +6,17 @@ import { Play, Pause, RotateCcw, Volume2 } from "lucide-react";
 interface VideoPlayerProps {
   videoUrl: string;
   onTimeUpdate?: (currentTime: number, duration: number) => void;
+  onPlaySegment?: (startTime: number, endTime: number) => void;
 }
 
-export const VideoPlayer = ({ videoUrl, onTimeUpdate }: VideoPlayerProps) => {
+export const VideoPlayer = ({ videoUrl, onTimeUpdate, onPlaySegment }: VideoPlayerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
+  const [segmentStartTime, setSegmentStartTime] = useState<number | null>(null);
+  const [segmentEndTime, setSegmentEndTime] = useState<number | null>(null);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -26,6 +29,12 @@ export const VideoPlayer = ({ videoUrl, onTimeUpdate }: VideoPlayerProps) => {
     const handleTimeUpdate = () => {
       setCurrentTime(video.currentTime);
       onTimeUpdate?.(video.currentTime, video.duration);
+      
+      // Auto-pause at segment end
+      if (segmentEndTime && video.currentTime >= segmentEndTime) {
+        video.pause();
+        setIsPlaying(false);
+      }
     };
 
     video.addEventListener('loadedmetadata', handleLoadedMetadata);
@@ -56,6 +65,26 @@ export const VideoPlayer = ({ videoUrl, onTimeUpdate }: VideoPlayerProps) => {
     video.currentTime = 0;
     setCurrentTime(0);
   };
+
+  const playSegment = (startTime: number, endTime: number) => {
+    const video = videoRef.current;
+    if (!video) return;
+    
+    setSegmentStartTime(startTime);
+    setSegmentEndTime(endTime);
+    video.currentTime = startTime;
+    video.play();
+    setIsPlaying(true);
+  };
+
+  // Expose playSegment to parent
+  useEffect(() => {
+    if (onPlaySegment) {
+      // This is a bit of a hack to expose the function to parent
+      // In a real app, you might use useImperativeHandle with forwardRef
+      (window as any).playVideoSegment = playSegment;
+    }
+  }, [onPlaySegment]);
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
